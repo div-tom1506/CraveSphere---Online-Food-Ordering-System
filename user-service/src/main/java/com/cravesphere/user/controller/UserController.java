@@ -17,27 +17,27 @@ import com.cravesphere.user.service.UserService;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-	
+
 	@Autowired
 	private UserService userService;
-	
-	@PostMapping("/register") 
+
+	@PostMapping("/register")
 	public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
-		
-		LOGGER.info("Received request to register user: "+userDto.getEmail());
-		
+
+		LOGGER.info("Received request to register user: " + userDto.getEmail());
+
 		return ResponseEntity.ok(userService.registerUser(userDto));
 	}
-	
+
 	@PostMapping("/login")
 	public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
-		
-		LOGGER.info("Received request to register user: "+authRequest.getEmail());
-		
+
+		LOGGER.info("Received request to register user: " + authRequest.getEmail());
+
 		return ResponseEntity.ok(userService.authenticateUser(authRequest));
-		
+
 	}
 
 }

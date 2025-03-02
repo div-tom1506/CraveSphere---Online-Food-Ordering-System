@@ -1,4 +1,4 @@
-package com.cravesphere.user.exception;
+package com.cravesphere.restaurant.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -6,30 +6,18 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class UserGlobalException {
+public class RestaurantGlobalException {
 
 	@ExceptionHandler
-	public ResponseEntity<ErrorResponse> handleException(UserNotFoundException userNotFoundException) {
+	public ResponseEntity<ErrorResponse> handleException(RestaurantNotFoundException restaurantNotFoundException) {
 
 		ErrorResponse errorResponse = new ErrorResponse();
 
 		errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
-		errorResponse.setMessage(userNotFoundException.getMessage());
+		errorResponse.setMessage(restaurantNotFoundException.getMessage());
 		errorResponse.setTimeStamp(System.currentTimeMillis());
 
 		return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
-	}
-
-	@ExceptionHandler
-	public ResponseEntity<ErrorResponse> handleException(EmailAlreadyExistsException emailAlreadyExistsException) {
-
-		ErrorResponse errorResponse = new ErrorResponse();
-
-		errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-		errorResponse.setMessage(emailAlreadyExistsException.getMessage());
-		errorResponse.setTimeStamp(System.currentTimeMillis());
-
-		return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler

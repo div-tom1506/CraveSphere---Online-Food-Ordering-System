@@ -17,13 +17,13 @@ import com.cravesphere.user.model.User;
 import com.cravesphere.user.repository.UserRepository;
 
 @Service
-public class UserServiceImpl implements UserService{
-	
+public class UserServiceImpl implements UserService {
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired 
+	@Autowired
 	private JwtUtil jwtUtil;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -32,39 +32,39 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public String registerUser(UserDto userDto) {
-		
-		
-		if(userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-			
-			LOGGER.info("email already exists: "+userDto.getEmail());
+
+		if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
+
+			LOGGER.info("email already exists: " + userDto.getEmail());
 			throw new EmailAlreadyExistsException("User with " + userDto.getEmail() + " already exists");
 		}
-		
-		LOGGER.info("Registering new user: "+userDto.getName());
-		
+
+		LOGGER.info("Registering new user: " + userDto.getName());
+
 		User user = new User();
 		user.setName(userDto.getName());
 		user.setEmail(userDto.getEmail());
 		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 		userRepository.save(user);
-		
+
 		return "User registered successfully!";
 
 	}
 
 	@Override
 	public AuthResponse authenticateUser(AuthRequest authRequest) {
-		
-		LOGGER.info("Authenticating user: "+authRequest.getEmail());
+
+		LOGGER.info("Authenticating user: " + authRequest.getEmail());
 
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-		
+
 		User user = userRepository.findByEmail(authRequest.getEmail())
-				.orElseThrow(() -> new UserNotFoundException("User with email " + authRequest.getEmail() + " not found !"));
-		
+				.orElseThrow(
+						() -> new UserNotFoundException("User with email " + authRequest.getEmail() + " not found !"));
+
 		String token = jwtUtil.generateToken(user.getEmail());
 		return new AuthResponse(token);
-		
+
 	}
 }
