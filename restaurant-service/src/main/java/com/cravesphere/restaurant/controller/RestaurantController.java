@@ -19,7 +19,7 @@ import com.cravesphere.restaurant.dto.RestaurantDto;
 import com.cravesphere.restaurant.service.RestaurantService;
 
 @RestController
-@RequestMapping("restaurants")
+@RequestMapping("/api/restaurants")
 public class RestaurantController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RestaurantController.class);
@@ -56,8 +56,7 @@ public class RestaurantController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable int id,
-			@RequestBody RestaurantDto restaurantDto) {
+	public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable int id, @RequestBody RestaurantDto restaurantDto) {
 		LOGGER.info("Received request to update restaurant with ID: " + id);
 
 		return ResponseEntity.ok(restaurantService.updateRestaurants(id, restaurantDto));

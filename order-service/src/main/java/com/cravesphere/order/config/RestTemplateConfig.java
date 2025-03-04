@@ -1,4 +1,4 @@
-package com.cravesphere.restaurant.config;
+package com.cravesphere.order.config;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-public class ServiceConfig {
-
-	// Using RestTemplate for inter-service communication.
+public class RestTemplateConfig {
+	
 	@Bean
-	@LoadBalanced
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
+    @LoadBalanced
+    RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+	
 
 }
