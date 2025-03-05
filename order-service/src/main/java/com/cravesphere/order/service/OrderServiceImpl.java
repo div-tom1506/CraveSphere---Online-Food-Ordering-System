@@ -26,6 +26,7 @@ public class OrderServiceImpl implements OrderService {
 	
 	@Autowired
 	private OrderRepository orderRepository;
+	@Autowired
 	private RestTemplate restTemplate;
 
 	@Override
