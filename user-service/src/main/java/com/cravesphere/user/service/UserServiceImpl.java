@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.cravesphere.user.dto.AuthRequest;
 import com.cravesphere.user.dto.AuthResponse;
 import com.cravesphere.user.dto.UserDto;
+import com.cravesphere.user.dto.UserResponse;
 import com.cravesphere.user.exception.EmailAlreadyExistsException;
 import com.cravesphere.user.exception.UserNotFoundException;
 import com.cravesphere.user.model.User;
@@ -67,4 +68,38 @@ public class UserServiceImpl implements UserService {
 		return new AuthResponse(token);
 
 	}
+
+	@Override
+	public UserResponse getUserById(int userId) {
+		LOGGER.info("fetching user by ID: " + userId);
+		
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+		
+		return new UserResponse(user.getId(), user.getName(), user.getEmail());
+	}
+
+	@Override
+	public UserResponse getUserByEmail(String email) {
+		LOGGER.info("fetching user by email id: " + email);
+		
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+		
+		return new UserResponse(user.getId(), user.getName(), user.getEmail());
+	}
+
+	@Override
+	public String removeUser(int userId) {
+		LOGGER.info("removing user with id: " + userId);
+		
+		if (!userRepository.existsById(userId)) {
+			LOGGER.error("User not found with id: " + userId);
+			throw new UserNotFoundException("User with ID " + userId + " not found");
+		}
+		
+		userRepository.deleteById(userId);
+		return "User with ID " + userId + " is removed successfully";
+	}
+	
 }
