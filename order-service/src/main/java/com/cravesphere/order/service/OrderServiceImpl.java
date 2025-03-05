@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,7 +16,6 @@ import com.cravesphere.order.exception.OrderNotFoundException;
 import com.cravesphere.order.model.Order;
 import com.cravesphere.order.repository.OrderRepository;
 
-import freemarker.core.JSONCFormat;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -34,8 +32,8 @@ public class OrderServiceImpl implements OrderService {
 		LOGGER.info("Placing new order");
 		
 		Order order = new Order();
-		order.setUserId(orderDto.getUser().getId());                  // To pass userId in UserDto of user service
-		order.setRestaurantId(orderDto.getRestaurant().getId());      // To pass restaurantId in RestaurantDto of restaurant service
+		order.setUserId(orderDto.getUser().getUserId());                 
+		order.setRestaurantId(orderDto.getRestaurant().getRestaurantId());
 		order.setOrderTime(orderDto.getOrderTime());
 		order.setStatus(orderDto.getStatus());
 		order.setTotalAmount(orderDto.getTotalAmount());
@@ -47,12 +45,10 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public OrderResponseDto getOrderByOrderId(int orderId) {
 		LOGGER.info("Fetching order by ID: " + orderId);
-	    
-	    // Fetch order from database
+
 	    Order order = orderRepository.findById(orderId)
 	            .orElseThrow(() -> new OrderNotFoundException("Order with orderId " + orderId + " not found"));
 
-	    // Fetch user details
 	    UserDto user = restTemplate.getForObject("http://USER-SERVICE/api/users/" + order.getUserId(), UserDto.class);
 
 	    // Fetch restaurant details

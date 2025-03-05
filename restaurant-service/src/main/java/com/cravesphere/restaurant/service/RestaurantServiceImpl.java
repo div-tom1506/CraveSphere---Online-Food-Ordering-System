@@ -41,7 +41,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
 		return restaurantRepository.findByIsActiveTrue()
 				.stream()
-				.map(r -> new RestaurantDto(r.getName(), r.getLocation(), r.getCuisineType(), r.isActive()))
+				.map(r -> new RestaurantDto(r.getId(), r.getName(), r.getLocation(), r.getCuisineType(), r.isActive()))
 				.collect(Collectors.toList());
 
 	}
@@ -53,7 +53,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 		Restaurant restaurant = restaurantRepository.findById(id)
 				.orElseThrow(() -> new RestaurantNotFoundException("Restaurant with ID " + id + " not found"));
 
-		return new RestaurantDto(restaurant.getName(), restaurant.getLocation(), restaurant.getCuisineType(),
+		return new RestaurantDto(restaurant.getId(), restaurant.getName(), restaurant.getLocation(), restaurant.getCuisineType(),
 				restaurant.isActive());
 	}
 
@@ -64,7 +64,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 		Restaurant restaurant = restaurantRepository.findByName(name)
 				.orElseThrow(() -> new RestaurantNotFoundException("Restaurant with name " + name + " not found"));
 
-		return new RestaurantDto(restaurant.getName(), restaurant.getLocation(), restaurant.getCuisineType(),
+		return new RestaurantDto(restaurant.getId(), restaurant.getName(), restaurant.getLocation(), restaurant.getCuisineType(),
 				restaurant.isActive());
 	}
 

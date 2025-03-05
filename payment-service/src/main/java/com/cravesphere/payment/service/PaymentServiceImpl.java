@@ -1,11 +1,12 @@
 package com.cravesphere.payment.service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,6 +14,9 @@ import com.cravesphere.payment.dto.PaymentDto;
 import com.cravesphere.payment.entity.Payment;
 import com.cravesphere.payment.exception.PaymentNotFoundException;
 import com.cravesphere.payment.repository.PaymentRepository;
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -23,9 +27,16 @@ public class PaymentServiceImpl implements PaymentService {
 	private PaymentRepository paymentRepository;
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Value("${razorpay.api.key}")
+    private String razorpayKey;
+
+    @Value("${razorpay.api.secret}")
+    private String razorpaySecret;
+
 
 	@Override
-	public Payment processPayment(PaymentDto paymentDto) {
+	public String processPayment(PaymentDto paymentDto) throws RazorpayException {
 		LOGGER.info("Processing payment");
 		
 		String userValidation = restTemplate.getForObject("http://USER-SERVICE/api/users/" + paymentDto.getUserId(), String.class);
@@ -35,18 +46,29 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException("Invalid User ID or Order ID");
         }
         
-        String transactionId = UUID.randomUUID().toString();
+        RazorpayClient razorpay = new RazorpayClient(razorpayKey, razorpaySecret);
+        
+        int amountInPaise = (int) (paymentDto.getAmount() * 100);
+        
+        JSONObject orderRequest = new JSONObject();
+        orderRequest.put("amount", amountInPaise);
+        orderRequest.put("currency", "INR");
+        orderRequest.put("receipt", "order_rcpt_" + paymentDto.getOrderId());
+        orderRequest.put("payment_capture", 1);
+        
+        Order order = razorpay.orders.create(orderRequest);
         
         Payment payment = new Payment();
         payment.setUserId(paymentDto.getUserId());
         payment.setOrderId(paymentDto.getOrderId());
         payment.setAmount(paymentDto.getAmount());
-        payment.setPaymentStatus("Success");
-        payment.setTransactionId(transactionId);
+        payment.setPaymentStatus("Created");
+        payment.setTransactionId(order.get("id"));
         payment.setPaymentTime(LocalDateTime.now());
 		
-        return paymentRepository.save(payment);
-		
+        paymentRepository.save(payment);
+        
+        return order.toString();
 	}
 
 	@Override

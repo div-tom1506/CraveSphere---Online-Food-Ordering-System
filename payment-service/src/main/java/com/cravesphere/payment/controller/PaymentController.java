@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cravesphere.payment.dto.PaymentDto;
 import com.cravesphere.payment.entity.Payment;
 import com.cravesphere.payment.service.PaymentService;
+import com.razorpay.RazorpayException;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -25,7 +26,7 @@ public class PaymentController {
 	private PaymentService paymentService;
 	
 	@PostMapping()
-	public ResponseEntity<Payment> processPayment(@RequestBody PaymentDto paymentDto) {
+	public ResponseEntity<String> processPayment(@RequestBody PaymentDto paymentDto) throws RazorpayException {
 		LOGGER.info("Received request to process payment");
 		
 		return ResponseEntity.ok(paymentService.processPayment(paymentDto));
